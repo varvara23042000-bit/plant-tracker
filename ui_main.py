@@ -44,7 +44,7 @@ class MainWindow(QMainWindow):
         left_layout = QVBoxLayout(left_panel)
 
         lbl_title = QLabel("Мои растения")
-        lbl_title.setStyleSheet("font-size: 16px; font-weight: bold;")
+        lbl_title.setStyleSheet("font-size: 16px; font-weight: bold; color: #1B5E20;")
         left_layout.addWidget(lbl_title)
 
         self.table = QTableWidget()
@@ -72,7 +72,7 @@ class MainWindow(QMainWindow):
 
         self.lbl_needing_water = QLabel("Нет растений, требующих полива")
         self.lbl_needing_water.setStyleSheet(
-            "background-color: #fff3cd; padding: 8px; border-radius: 6px;"
+            "background-color: #C8E6C9; padding: 8px; border-radius: 6px; color: #1B5E20;"
         )
         left_layout.addWidget(self.lbl_needing_water)
 
@@ -80,7 +80,7 @@ class MainWindow(QMainWindow):
         right_layout = QVBoxLayout(right_panel)
 
         lbl_form_title = QLabel("Информация о растении")
-        lbl_form_title.setStyleSheet("font-size: 16px; font-weight: bold;")
+        lbl_form_title.setStyleSheet("font-size: 16px; font-weight: bold; color: #1B5E20;")
         right_layout.addWidget(lbl_form_title)
 
         form_widget = QWidget()
@@ -113,10 +113,11 @@ class MainWindow(QMainWindow):
         self.lbl_image.setAlignment(Qt.AlignCenter)
         self.lbl_image.setMinimumHeight(180)
         self.lbl_image.setStyleSheet("""
-            background-color: #f5f5f5;
-            border: 2px dashed #bbb;
+            background-color: #E8F5E9;
+            border: 2px dashed #66BB6A;
             border-radius: 8px;
             font-size: 14px;
+            color: #2E7D32;
         """)
         right_layout.addWidget(self.lbl_image)
 
@@ -144,49 +145,71 @@ class MainWindow(QMainWindow):
 
     def _apply_styles(self):
         self.setStyleSheet("""
-            QMainWindow { background-color: #f0f4f8; }
+            QMainWindow {
+                background-color: #E8F5E9;
+            }
+
             QPushButton {
-                background-color: #4CAF50;
+                background-color: #43A047;
                 color: white;
                 border: none;
                 padding: 8px 16px;
                 border-radius: 6px;
                 font-weight: bold;
             }
-            QPushButton:hover { background-color: #45a049; }
-            QPushButton:pressed { background-color: #3d8b40; }
+            QPushButton:hover {
+                background-color: #388E3C;
+            }
+            QPushButton:pressed {
+                background-color: #2E7D32;
+            }
+
             QPushButton#btn_delete {
-                background-color: #dc3545;
+                background-color: #C62828;
             }
             QPushButton#btn_delete:hover {
-                background-color: #c82333;
+                background-color: #B71C1C;
             }
+
             QTableWidget {
                 background-color: white;
-                alternate-background-color: #f8f9fa;
-                gridline-color: #dee2e6;
+                alternate-background-color: #F1F8E9;
+                gridline-color: #A5D6A7;
                 border-radius: 8px;
             }
             QTableWidget::item:selected {
-                background-color: #90caf9;
+                background-color: #81C784;
+                color: white;
             }
             QHeaderView::section {
-                background-color: #e9ecef;
+                background-color: #66BB6A;
                 padding: 6px;
                 border: none;
                 font-weight: bold;
+                color: white;
             }
+
             QLineEdit, QTextEdit, QDateEdit, QSpinBox {
-                border: 1px solid #ced4da;
+                border: 1px solid #A5D6A7;
                 border-radius: 6px;
                 padding: 8px;
                 background-color: white;
             }
             QLineEdit:focus, QTextEdit:focus, QDateEdit:focus, QSpinBox:focus {
-                border-color: #4CAF50;
+                border-color: #43A047;
             }
-            QLabel { color: #333; }
-            QFormLayout { spacing: 12px; }
+
+            QLabel {
+                color: #1B5E20;
+            }
+
+            QFormLayout {
+                spacing: 12px;
+            }
+
+            QSplitter::handle {
+                background-color: #81C784;
+            }
         """)
 
     def _bind_signals(self):
@@ -318,7 +341,7 @@ class MainWindow(QMainWindow):
             pixmap = QPixmap.fromImage(qt_img)
             self.lbl_image.setPixmap(pixmap)
             self.lbl_image.setScaledContents(True)
-            self.lbl_image.setStyleSheet("border: 2px solid #4CAF50; border-radius: 8px;")
+            self.lbl_image.setStyleSheet("border: 2px solid #43A047; border-radius: 8px;")
         except Exception as e:
             QMessageBox.critical(self, "Ошибка", f"Не удалось загрузить изображение:\n{e}")
             self._clear_image_display()
@@ -331,10 +354,11 @@ class MainWindow(QMainWindow):
         self.lbl_image.setText("Фото растения")
         self.lbl_image.setPixmap(QPixmap())
         self.lbl_image.setStyleSheet("""
-            background-color: #f5f5f5;
-            border: 2px dashed #bbb;
+            background-color: #E8F5E9;
+            border: 2px dashed #66BB6A;
             border-radius: 8px;
             font-size: 14px;
+            color: #2E7D32;
         """)
 
     def _on_save(self):
@@ -409,7 +433,7 @@ class MainWindow(QMainWindow):
         if not needing:
             self.lbl_needing_water.setText("Все растения политы.")
             self.lbl_needing_water.setStyleSheet(
-                "background-color: #d4edda; padding: 8px; border-radius: 6px;"
+                "background-color: #C8E6C9; padding: 8px; border-radius: 6px; color: #1B5E20;"
             )
         else:
             names = [f"{p['name']} (+{p['days_overdue']} дн.)" for p in needing[:3]]
@@ -418,7 +442,7 @@ class MainWindow(QMainWindow):
                 text += f" и ещё {len(needing) - 3}..."
             self.lbl_needing_water.setText(text)
             self.lbl_needing_water.setStyleSheet(
-                "background-color: #f8d7da; padding: 8px; border-radius: 6px;"
+                "background-color: #FFCDD2; padding: 8px; border-radius: 6px; color: #B71C1C;"
             )
 
     def _clear_form(self):
