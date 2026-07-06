@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyc
+
+# Виртуальное окружение
+venv/
+env/
+.venv/
+
+# IDE
+.idea/
+.vscode/
+
+# Файлы проекта
+*.db
+*.log
