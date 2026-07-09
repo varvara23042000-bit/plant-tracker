@@ -28,19 +28,12 @@ class DatabaseManager:
 
     def get_all(self):
         cursor = self.conn.cursor()
-        cursor.execute("""
-            SELECT id, name, species, last_watered, frequency, notes, image_path
-            FROM plants ORDER BY name
-        """)
+        cursor.execute("SELECT id, name, species, last_watered, frequency, notes, image_path FROM plants ORDER BY name")
         return cursor.fetchall()
 
     def get_plant_by_id(self, plant_id):
         cursor = self.conn.cursor()
-        cursor.execute(
-            "SELECT id, name, species, last_watered, frequency, notes, image_path "
-            "FROM plants WHERE id = ?",
-            (plant_id,)
-        )
+        cursor.execute("SELECT id, name, species, last_watered, frequency, notes, image_path FROM plants WHERE id = ?", (plant_id,))
         return cursor.fetchone()
 
     def insert_plant(self, data):
@@ -62,9 +55,7 @@ class DatabaseManager:
     def update_plant(self, data):
         cursor = self.conn.cursor()
         cursor.execute("""
-            UPDATE plants
-            SET name=?, species=?, last_watered=?, frequency=?, notes=?, image_path=?
-            WHERE id=?
+            UPDATE plants SET name=?, species=?, last_watered=?, frequency=?, notes=?, image_path=? WHERE id=?
         """, (
             data.get("name", ""),
             data.get("species", ""),
@@ -85,24 +76,20 @@ class DatabaseManager:
         if new_date is None:
             new_date = datetime.now().strftime("%Y-%m-%d")
         cursor = self.conn.cursor()
-        cursor.execute(
-            "UPDATE plants SET last_watered = ? WHERE id = ?",
-            (new_date, plant_id)
-        )
+        cursor.execute("UPDATE plants SET last_watered = ? WHERE id = ?", (new_date, plant_id))
         self.conn.commit()
 
     def get_plants_needing_water(self):
         today = datetime.now().date()
-        plants = self.get_all()
-        needing_water = []
-        for plant in plants:
-            last_watered = datetime.strptime(plant["last_watered"], "%Y-%m-%d").date()
-            days_passed = (today - last_watered).days
-            if days_passed > plant["frequency"]:
-                plant_dict = dict(plant)
-                plant_dict["days_overdue"] = days_passed - plant["frequency"]
-                needing_water.append(plant_dict)
-        return needing_water
+        needing = []
+        for plant in self.get_all():
+            last = datetime.strptime(plant["last_watered"], "%Y-%m-%d").date()
+            days = (today - last).days
+            if days > plant["frequency"]:
+                p = dict(plant)
+                p["days_overdue"] = days - plant["frequency"]
+                needing.append(p)
+        return needing
 
     def close(self):
         if self.conn:
