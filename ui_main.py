@@ -40,56 +40,69 @@ class MainWindow(QMainWindow):
         main_layout = QHBoxLayout()
         self.centralWidget().setLayout(main_layout)
 
-        left_panel = QWidget()
-        left_layout = QVBoxLayout(left_panel)
+        # Левая панель
+        left = QWidget()
+        left_layout = QVBoxLayout(left)
 
-        lbl_title = QLabel("Мои растения")
-        lbl_title.setStyleSheet("font-size: 16px; font-weight: bold; color: #1B5E20;")
-        left_layout.addWidget(lbl_title)
+        left_layout.addWidget(QLabel("Мои растения"))
+        left_layout.addWidget(self._create_table())
+        left_layout.addLayout(self._create_buttons())
+        left_layout.addWidget(self._create_status_label())
 
+        # Правая панель
+        right = QWidget()
+        right_layout = QVBoxLayout(right)
+
+        right_layout.addWidget(QLabel("Информация о растении"))
+        right_layout.addWidget(self._create_form())
+        right_layout.addWidget(self._create_image_label())
+        right_layout.addLayout(self._create_image_buttons())
+        right_layout.addLayout(self._create_action_buttons())
+        right_layout.addStretch()
+
+        splitter = QSplitter(Qt.Horizontal)
+        splitter.addWidget(left)
+        splitter.addWidget(right)
+        splitter.setSizes([600, 400])
+        main_layout.addWidget(splitter)
+
+    def _create_table(self):
         self.table = QTableWidget()
         self.table.setColumnCount(6)
-        self.table.setHorizontalHeaderLabels([
-            "ID", "Название", "Вид", "Последний полив", "Период (дней)", "Статус"
-        ])
+        self.table.setHorizontalHeaderLabels(["ID", "Название", "Вид", "Последний полив", "Период", "Статус"])
         self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.table.setSelectionBehavior(QTableWidget.SelectRows)
         self.table.setEditTriggers(QTableWidget.NoEditTriggers)
         self.table.setAlternatingRowColors(True)
-        left_layout.addWidget(self.table)
+        return self.table
 
-        btn_layout = QHBoxLayout()
+    def _create_buttons(self):
+        layout = QHBoxLayout()
         self.btn_add = QPushButton("Добавить")
         self.btn_edit = QPushButton("Изменить")
         self.btn_delete = QPushButton("Удалить")
         self.btn_delete.setObjectName("btn_delete")
         self.btn_water = QPushButton("Отметить полив")
         self.btn_refresh = QPushButton("Обновить")
-        for btn in [self.btn_add, self.btn_edit, self.btn_delete,
-                    self.btn_water, self.btn_refresh]:
-            btn_layout.addWidget(btn)
-        left_layout.addLayout(btn_layout)
+        for btn in [self.btn_add, self.btn_edit, self.btn_delete, self.btn_water, self.btn_refresh]:
+            layout.addWidget(btn)
+        return layout
 
+    def _create_status_label(self):
         self.lbl_needing_water = QLabel("Нет растений, требующих полива")
         self.lbl_needing_water.setStyleSheet(
             "background-color: #C8E6C9; padding: 8px; border-radius: 6px; color: #1B5E20;"
         )
-        left_layout.addWidget(self.lbl_needing_water)
+        return self.lbl_needing_water
 
-        right_panel = QWidget()
-        right_layout = QVBoxLayout(right_panel)
-
-        lbl_form_title = QLabel("Информация о растении")
-        lbl_form_title.setStyleSheet("font-size: 16px; font-weight: bold; color: #1B5E20;")
-        right_layout.addWidget(lbl_form_title)
-
-        form_widget = QWidget()
-        form_layout = QFormLayout(form_widget)
+    def _create_form(self):
+        form = QWidget()
+        layout = QFormLayout(form)
 
         self.le_name = QLineEdit()
-        self.le_name.setPlaceholderText("Например: Монстера")
+        self.le_name.setPlaceholderText("Монстера")
         self.le_species = QLineEdit()
-        self.le_species.setPlaceholderText("Например: Monstera deliciosa")
+        self.le_species.setPlaceholderText("Monstera deliciosa")
         self.de_watered = QDateEdit()
         self.de_watered.setDate(QDate(2026, 7, 4))
         self.de_watered.setCalendarPopup(True)
@@ -101,14 +114,14 @@ class MainWindow(QMainWindow):
         self.te_notes.setMaximumHeight(80)
         self.te_notes.setPlaceholderText("Заметки по уходу...")
 
-        form_layout.addRow("Название:", self.le_name)
-        form_layout.addRow("Вид:", self.le_species)
-        form_layout.addRow("Последний полив:", self.de_watered)
-        form_layout.addRow("Период полива:", self.spin_frequency)
-        form_layout.addRow("Заметки:", self.te_notes)
+        layout.addRow("Название:", self.le_name)
+        layout.addRow("Вид:", self.le_species)
+        layout.addRow("Последний полив:", self.de_watered)
+        layout.addRow("Период полива:", self.spin_frequency)
+        layout.addRow("Заметки:", self.te_notes)
+        return form
 
-        right_layout.addWidget(form_widget)
-
+    def _create_image_label(self):
         self.lbl_image = QLabel("Фото растения")
         self.lbl_image.setAlignment(Qt.AlignCenter)
         self.lbl_image.setMinimumHeight(180)
@@ -119,104 +132,60 @@ class MainWindow(QMainWindow):
             font-size: 14px;
             color: #2E7D32;
         """)
-        right_layout.addWidget(self.lbl_image)
+        return self.lbl_image
 
-        img_btn_layout = QHBoxLayout()
+    def _create_image_buttons(self):
+        layout = QHBoxLayout()
         self.btn_load_img = QPushButton("Загрузить фото")
         self.btn_clear_img = QPushButton("Удалить фото")
-        img_btn_layout.addWidget(self.btn_load_img)
-        img_btn_layout.addWidget(self.btn_clear_img)
-        right_layout.addLayout(img_btn_layout)
+        layout.addWidget(self.btn_load_img)
+        layout.addWidget(self.btn_clear_img)
+        return layout
 
-        action_layout = QHBoxLayout()
+    def _create_action_buttons(self):
+        layout = QHBoxLayout()
         self.btn_save = QPushButton("Сохранить")
-        self.btn_clear = QPushButton("Очистить форму")
-        action_layout.addWidget(self.btn_save)
-        action_layout.addWidget(self.btn_clear)
-        right_layout.addLayout(action_layout)
-
-        right_layout.addStretch()
-
-        splitter = QSplitter(Qt.Horizontal)
-        splitter.addWidget(left_panel)
-        splitter.addWidget(right_panel)
-        splitter.setSizes([600, 400])
-        main_layout.addWidget(splitter)
+        self.btn_clear = QPushButton("Очистить")
+        layout.addWidget(self.btn_save)
+        layout.addWidget(self.btn_clear)
+        return layout
 
     def _apply_styles(self):
         self.setStyleSheet("""
-            QMainWindow {
-                background-color: #E8F5E9;
-            }
-
+            QMainWindow { background-color: #E8F5E9; }
             QPushButton {
-                background-color: #43A047;
-                color: white;
-                border: none;
-                padding: 8px 16px;
-                border-radius: 6px;
-                font-weight: bold;
+                background-color: #43A047; color: white; border: none;
+                padding: 8px 16px; border-radius: 6px; font-weight: bold;
             }
-            QPushButton:hover {
-                background-color: #388E3C;
-            }
-            QPushButton:pressed {
-                background-color: #2E7D32;
-            }
-
-            QPushButton#btn_delete {
-                background-color: #C62828;
-            }
-            QPushButton#btn_delete:hover {
-                background-color: #B71C1C;
-            }
-
+            QPushButton:hover { background-color: #388E3C; }
+            QPushButton:pressed { background-color: #2E7D32; }
+            QPushButton#btn_delete { background-color: #C62828; }
+            QPushButton#btn_delete:hover { background-color: #B71C1C; }
             QTableWidget {
-                background-color: white;
-                alternate-background-color: #F1F8E9;
-                gridline-color: #A5D6A7;
-                border-radius: 8px;
+                background-color: white; alternate-background-color: #F1F8E9;
+                gridline-color: #A5D6A7; border-radius: 8px;
             }
-            QTableWidget::item:selected {
-                background-color: #81C784;
-                color: white;
-            }
+            QTableWidget::item:selected { background-color: #81C784; color: white; }
             QHeaderView::section {
-                background-color: #66BB6A;
-                padding: 6px;
-                border: none;
-                font-weight: bold;
-                color: white;
+                background-color: #66BB6A; padding: 6px; border: none;
+                font-weight: bold; color: white;
             }
-
             QLineEdit, QTextEdit, QDateEdit, QSpinBox {
-                border: 1px solid #A5D6A7;
-                border-radius: 6px;
-                padding: 8px;
-                background-color: white;
+                border: 1px solid #A5D6A7; border-radius: 6px;
+                padding: 8px; background-color: white;
             }
             QLineEdit:focus, QTextEdit:focus, QDateEdit:focus, QSpinBox:focus {
                 border-color: #43A047;
             }
-
-            QLabel {
-                color: #1B5E20;
-            }
-
-            QFormLayout {
-                spacing: 12px;
-            }
-
-            QSplitter::handle {
-                background-color: #81C784;
-            }
+            QLabel { color: #1B5E20; }
+            QSplitter::handle { background-color: #81C784; }
         """)
 
     def _bind_signals(self):
         self.btn_add.clicked.connect(self._on_add)
         self.btn_edit.clicked.connect(self._on_edit)
         self.btn_delete.clicked.connect(self._on_delete)
-        self.btn_water.clicked.connect(self._on_water_plant)
+        self.btn_water.clicked.connect(self._on_water)
         self.btn_refresh.clicked.connect(self._on_refresh)
         self.btn_load_img.clicked.connect(self._on_load_image)
         self.btn_clear_img.clicked.connect(self._on_clear_image)
@@ -230,69 +199,42 @@ class MainWindow(QMainWindow):
         self.le_name.setFocus()
 
     def _on_edit(self):
-        selected = self.table.selectionModel().selectedRows()
-        if not selected:
-            QMessageBox.warning(self, "Внимание", "Выберите растение для редактирования.")
+        row = self._get_selected_row()
+        if row is None:
             return
-
-        row = selected[0].row()
-        plant_id = self.table.item(row, 0).data(Qt.UserRole)
-
-        plant = self.db.get_plant_by_id(plant_id)
+        plant = self.db.get_plant_by_id(self.table.item(row, 0).data(Qt.UserRole))
         if plant:
-            self.current_plant_id = plant_id
+            self.current_plant_id = plant["id"]
             self.le_name.setText(plant["name"])
             self.le_species.setText(plant["species"] or "")
             self.de_watered.setDate(QDate.fromString(plant["last_watered"], "yyyy-MM-dd"))
             self.spin_frequency.setValue(plant["frequency"])
             self.te_notes.setText(plant["notes"] or "")
             self.current_image_path = plant["image_path"] or ""
-            if self.current_image_path:
-                self._load_and_display_image(self.current_image_path)
-            else:
-                self._clear_image_display()
+            self._load_or_clear_image(self.current_image_path)
 
     def _on_delete(self):
-        selected = self.table.selectionModel().selectedRows()
-        if not selected:
-            QMessageBox.warning(self, "Внимание", "Выберите растение для удаления.")
+        row = self._get_selected_row()
+        if row is None:
             return
-
-        row = selected[0].row()
-        plant_name = self.table.item(row, 1).text()
+        name = self.table.item(row, 1).text()
         plant_id = self.table.item(row, 0).data(Qt.UserRole)
+        if QMessageBox.question(self, "Удаление", f"Удалить '{name}'?", QMessageBox.Yes | QMessageBox.No) == QMessageBox.Yes:
+            self.db.delete_plant(plant_id)
+            self._refresh_table()
+            self._clear_form()
+            self._update_needing_water_status()
 
-        reply = QMessageBox.question(
-            self,
-            "Подтверждение удаления",
-            f"Вы уверены, что хотите удалить растение '{plant_name}'?",
-            QMessageBox.Yes | QMessageBox.No
-        )
-
-        if reply == QMessageBox.Yes:
-            try:
-                self.db.delete_plant(plant_id)
-                self._refresh_table()
-                self._clear_form()
-                self._update_needing_water_status()
-                QMessageBox.information(self, "Успех", f"Растение '{plant_name}' удалено.")
-            except Exception as e:
-                QMessageBox.critical(self, "Ошибка", f"Не удалось удалить:\n{e}")
-
-    def _on_water_plant(self):
-        selected = self.table.selectionModel().selectedRows()
-        if not selected:
-            QMessageBox.warning(self, "Внимание", "Выберите растение для отметки полива.")
+    def _on_water(self):
+        row = self._get_selected_row()
+        if row is None:
             return
-
-        row = selected[0].row()
         plant_id = self.table.item(row, 0).data(Qt.UserRole)
-        plant_name = self.table.item(row, 1).text()
-
+        name = self.table.item(row, 1).text()
         self.db.update_watering_date(plant_id)
         self._refresh_table()
         self._update_needing_water_status()
-        QMessageBox.information(self, "Успех", f"Полив для '{plant_name}' отмечен.")
+        QMessageBox.information(self, "Успех", f"Полив для '{name}' отмечен.")
 
     def _on_refresh(self):
         self._refresh_table()
@@ -300,55 +242,48 @@ class MainWindow(QMainWindow):
         QMessageBox.information(self, "Обновлено", "Данные обновлены.")
 
     def _on_select_row(self):
-        selected = self.table.selectionModel().selectedRows()
-        if not selected:
+        row = self._get_selected_row()
+        if row is None:
             return
-
-        row = selected[0].row()
-        plant_id = self.table.item(row, 0).data(Qt.UserRole)
-
-        plant = self.db.get_plant_by_id(plant_id)
+        plant = self.db.get_plant_by_id(self.table.item(row, 0).data(Qt.UserRole))
         if plant:
-            self.current_plant_id = plant_id
+            self.current_plant_id = plant["id"]
             self.le_name.setText(plant["name"])
             self.le_species.setText(plant["species"] or "")
             self.de_watered.setDate(QDate.fromString(plant["last_watered"], "yyyy-MM-dd"))
             self.spin_frequency.setValue(plant["frequency"])
             self.te_notes.setText(plant["notes"] or "")
             self.current_image_path = plant["image_path"] or ""
-            if self.current_image_path:
-                self._load_and_display_image(self.current_image_path)
-            else:
-                self._clear_image_display()
+            self._load_or_clear_image(self.current_image_path)
 
     def _on_load_image(self):
-        path, _ = QFileDialog.getOpenFileName(
-            self, "Выберите фото растения", "",
-            "Изображения (*.png *.jpg *.jpeg *.bmp *.gif)"
-        )
-        if not path:
-            return
-        self.current_image_path = path
-        self._load_and_display_image(path)
+        path, _ = QFileDialog.getOpenFileName(self, "Выберите фото", "", "Изображения (*.png *.jpg *.jpeg *.bmp *.gif)")
+        if path:
+            self.current_image_path = path
+            self._load_and_display_image(path)
+
+    def _on_clear_image(self):
+        self.current_image_path = ""
+        self._clear_image_display()
 
     def _load_and_display_image(self, path):
         try:
             img = Image.open(path).convert("RGBA")
-            max_size = (240, 240)
-            img.thumbnail(max_size, Image.LANCZOS)
+            img.thumbnail((240, 240), Image.LANCZOS)
             data = img.tobytes("raw", "RGBA")
             qt_img = QImage(data, img.width, img.height, QImage.Format_RGBA8888)
-            pixmap = QPixmap.fromImage(qt_img)
-            self.lbl_image.setPixmap(pixmap)
+            self.lbl_image.setPixmap(QPixmap.fromImage(qt_img))
             self.lbl_image.setScaledContents(True)
             self.lbl_image.setStyleSheet("border: 2px solid #43A047; border-radius: 8px;")
         except Exception as e:
             QMessageBox.critical(self, "Ошибка", f"Не удалось загрузить изображение:\n{e}")
             self._clear_image_display()
 
-    def _on_clear_image(self):
-        self.current_image_path = ""
-        self._clear_image_display()
+    def _load_or_clear_image(self, path):
+        if path:
+            self._load_and_display_image(path)
+        else:
+            self._clear_image_display()
 
     def _clear_image_display(self):
         self.lbl_image.setText("Фото растения")
@@ -364,8 +299,7 @@ class MainWindow(QMainWindow):
     def _on_save(self):
         name = self.le_name.text().strip()
         if not name:
-            QMessageBox.warning(self, "Ошибка валидации", "Название растения обязательно.")
-            self.le_name.setFocus()
+            QMessageBox.warning(self, "Ошибка", "Название обязательно.")
             return
 
         data = {
@@ -381,50 +315,43 @@ class MainWindow(QMainWindow):
             if self.current_plant_id:
                 data["id"] = self.current_plant_id
                 self.db.update_plant(data)
-                msg = f"Растение '{name}' обновлено."
+                msg = f"'{name}' обновлено."
             else:
-                new_id = self.db.insert_plant(data)
-                self.current_plant_id = new_id
-                msg = f"Растение '{name}' добавлено."
+                self.current_plant_id = self.db.insert_plant(data)
+                msg = f"'{name}' добавлено."
 
             self._refresh_table()
             self._clear_form()
             self._update_needing_water_status()
             QMessageBox.information(self, "Успех", msg)
         except Exception as e:
-            QMessageBox.critical(self, "Ошибка", f"Не удалось сохранить данные:\n{e}")
+            QMessageBox.critical(self, "Ошибка", f"Не удалось сохранить:\n{e}")
 
     def _refresh_table(self):
         self.table.setRowCount(0)
         plants = self.db.get_all()
         today = datetime.now().date()
 
-        for i, plant in enumerate(plants):
+        for i, p in enumerate(plants):
             self.table.insertRow(i)
 
             id_item = QTableWidgetItem()
-            id_item.setData(Qt.UserRole, plant["id"])
+            id_item.setData(Qt.UserRole, p["id"])
             self.table.setItem(i, 0, id_item)
 
-            self.table.setItem(i, 1, QTableWidgetItem(plant["name"]))
-            self.table.setItem(i, 2, QTableWidgetItem(plant["species"] or ""))
-            self.table.setItem(i, 3, QTableWidgetItem(plant["last_watered"]))
-            self.table.setItem(i, 4, QTableWidgetItem(str(plant["frequency"])))
+            self.table.setItem(i, 1, QTableWidgetItem(p["name"]))
+            self.table.setItem(i, 2, QTableWidgetItem(p["species"] or ""))
+            self.table.setItem(i, 3, QTableWidgetItem(p["last_watered"]))
+            self.table.setItem(i, 4, QTableWidgetItem(str(p["frequency"])))
 
-            last_watered = datetime.strptime(plant["last_watered"], "%Y-%m-%d").date()
-            days_passed = (today - last_watered).days
-
-            if days_passed <= plant["frequency"]:
-                status = "Ок"
-                status_item = QTableWidgetItem(status)
-                status_item.setBackground(QColor(200, 255, 200))
+            days = (today - datetime.strptime(p["last_watered"], "%Y-%m-%d").date()).days
+            if days <= p["frequency"]:
+                status = QTableWidgetItem("Ок")
+                status.setBackground(QColor(200, 255, 200))
             else:
-                overdue = days_passed - plant["frequency"]
-                status = f"Просрочено на {overdue} дн."
-                status_item = QTableWidgetItem(status)
-                status_item.setBackground(QColor(255, 200, 200))
-
-            self.table.setItem(i, 5, status_item)
+                status = QTableWidgetItem(f"Просрочено на {days - p['frequency']} дн.")
+                status.setBackground(QColor(255, 200, 200))
+            self.table.setItem(i, 5, status)
 
         self.table.setColumnHidden(0, True)
 
@@ -432,18 +359,14 @@ class MainWindow(QMainWindow):
         needing = self.db.get_plants_needing_water()
         if not needing:
             self.lbl_needing_water.setText("Все растения политы.")
-            self.lbl_needing_water.setStyleSheet(
-                "background-color: #C8E6C9; padding: 8px; border-radius: 6px; color: #1B5E20;"
-            )
+            self.lbl_needing_water.setStyleSheet("background-color: #C8E6C9; padding: 8px; border-radius: 6px; color: #1B5E20;")
         else:
             names = [f"{p['name']} (+{p['days_overdue']} дн.)" for p in needing[:3]]
             text = f"Требуют полива: {', '.join(names)}"
             if len(needing) > 3:
                 text += f" и ещё {len(needing) - 3}..."
             self.lbl_needing_water.setText(text)
-            self.lbl_needing_water.setStyleSheet(
-                "background-color: #FFCDD2; padding: 8px; border-radius: 6px; color: #B71C1C;"
-            )
+            self.lbl_needing_water.setStyleSheet("background-color: #FFCDD2; padding: 8px; border-radius: 6px; color: #B71C1C;")
 
     def _clear_form(self):
         self.le_name.clear()
@@ -456,13 +379,15 @@ class MainWindow(QMainWindow):
         self._clear_image_display()
         self.table.clearSelection()
 
+    def _get_selected_row(self):
+        selected = self.table.selectionModel().selectedRows()
+        if not selected:
+            QMessageBox.warning(self, "Внимание", "Выберите строку.")
+            return None
+        return selected[0].row()
+
     def closeEvent(self, event):
-        reply = QMessageBox.question(
-            self, "Выход",
-            "Вы уверены, что хотите выйти?",
-            QMessageBox.Yes | QMessageBox.No
-        )
-        if reply == QMessageBox.Yes:
+        if QMessageBox.question(self, "Выход", "Вы уверены?", QMessageBox.Yes | QMessageBox.No) == QMessageBox.Yes:
             self.db.close()
             event.accept()
         else:
